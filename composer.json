@@ -1,0 +1,21 @@
+{
+    "name": "bodunde/geocoder",
+    "description": "A laravel package that helps you with geocoding addresses and also helps in calculating the distance between two points using the Hervasine formula",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Adebiyi Bodunde",
+            "email": "bodunde.adebiyi@andela.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Bodunde\\Geocoder\\": "src/"
+        }
+    },
+    "minimum-stability": "dev",
+    "require": {
+        "illuminate/support": "~5",
+        "guzzlehttp/guzzle": "*"
+    }
+}
