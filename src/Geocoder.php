@@ -1,32 +1,46 @@
 <?php
-namespace Bodunde\Geocoder;
+namespace Bodunde\GoogleGeocoder;
 
 use GuzzleHttp\Client;
 
 class Geocoder {
+  /**
+   * holds google api key
+   * @var string
+   */
   private $googleApiKey;
+
+  /**
+   * guzzle client
+   * @var Client
+   */
   private $client;
+
+  /**
+   * base URL
+   */
   const API_BASE_URL = "https://maps.googleapis.com/maps/api/geocode/";
 
-
-  public function __construct($config=null)
+  /**
+   * saves google api key and initializes guzzle client
+   */
+  public function __construct()
   {
-    if ($config) {
-      $this->$googleApiKey = $config['google_api_key'];
+    if (function_exists('config')) {
+      $this->googleApiKey = config('pusher.google_api_key');
     }
-
-    $this->client = new Client([
-      'base_uri' => self::API_BASE_URL,
-      'defaults' => [
-        'verify' => 'true',
-      ]
-    ]);
+    $this->client = new Client($this->guzzleClientOptions());
   }
 
+  /**
+   * makes request to google maps api to fetch coordinates of location
+   * @param  String $location - location to be converted to coordinates
+   * @return array            - longitude and latitude of location
+   */
   public function getCoordinates($location)
   {
     $queryString = $this->constructQueryString($location, "geocoding");
-    $response = $this->client->get($$queryString);
+    $response = $this->client->get($queryString);
     $results = json_decode($response->getBody(), true, 512);
 
     if (isset($results['error_message'])) {
@@ -36,14 +50,38 @@ class Geocoder {
     return $results['results'][0]['geometry']['location'];
   }
 
-  public function getStreetAddress($longitude, $latitude)
+  /**
+   * makes request to googlemaps api to fetch address of
+   * coordinates using reverse geocoding
+   * @param  float $longitude   - longitudinal coordinate
+   * @param  float $latitude    - latitudinal coordinate
+   * @return String             - plain address of coordinates
+   */
+  public function getAddress($longitude, $latitude)
   {
     $queryString = $this->constructQueryString([
       'lng' => $longitude,
       'lat' => $latitude
     ], "reverse_geocoding");
+
+    $response = $this->client->get($queryString);
+    $results = json_decode($response->getBody(), true, 512);
+
+    if (isset($results['error_message'])) {
+      return null;
+    }
+
+    return $results['results'][0]['formatted_address'];
   }
 
+  /**
+   * fetches the distance between to locations (points)
+   * @param  array  $point1     - coordinates of first location
+   * @param  array  $point2     - coordinates of second location
+   * @param  string  $unit      - unit of location (km/mi/nmi)
+   * @param  integer $decimals  - precision
+   * @return string             - distance
+   */
   public function getDistanceBetween($point1, $point2, $unit = 'km', $decimals = 2)
   {
     // Calculate the distance in degrees using Hervasine formula
@@ -67,6 +105,13 @@ class Geocoder {
     return round($distance, $decimals);
   }
 
+  /**
+   * calculates the distance between two points using
+   * Haversine formula
+   * @param  float $point1  - coordinates of first point
+   * @param  float $point2  - coordinates of second point
+   * @return float          - distance between both points
+   */
   private function calcDistance($point1, $point2)
   {
     return rad2deg(acos((sin(deg2rad($point1['lat'])) *
@@ -76,6 +121,12 @@ class Geocoder {
       cos(deg2rad($point1['lng'] - $point2['lng'])))));
   }
 
+  /**
+   * constructs the query string used in the google api request
+   * @param  string/array $locationOrCoordinates  - location or coordinates
+   * @param  string $type                         - geocoding request or a reverse geocoding request
+   * @return string
+   */
   private function constructQueryString($locationOrCoordinates, $type)
   {
     switch($type) {
@@ -84,10 +135,24 @@ class Geocoder {
         break;
       case "reverse_geocoding":
         $lat = $locationOrCoordinates['lat'];
-        $lng = $locationOrCoordinates['lng']
+        $lng = $locationOrCoordinates['lng'];
         $queryString = 'json?latlng='.$lat.','.$lng.'&sensor=true&key='.$this->googleApiKey;
     }
 
     return $queryString;
+  }
+
+  /**
+   * returns options for the guzzle client
+   * @return array
+   */
+  private function guzzleClientOptions()
+  {
+    return [
+      'base_uri' => self::API_BASE_URL,
+      'defaults' => [
+        'verify' => 'true',
+      ]
+    ];
   }
 }
