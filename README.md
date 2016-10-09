@@ -28,7 +28,7 @@ public function index(Geocoder $geocoder)
     "lat" => 6.5349646,
     "lng" => 3.3892894
   ];
-  $address = $geocoder->getAddress(addressCoordinates);
+  $address = $geocoder->getAddress($addressCoordinates);
 
   // get distance between two locations
   $location1 = [
