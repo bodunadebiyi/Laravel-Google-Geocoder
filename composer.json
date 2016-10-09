@@ -1,6 +1,6 @@
 {
     "name": "bodunde/geocoder",
-    "description": "A laravel package that helps you with geocoding addresses and also helps in calculating the distance between two points using the Hervasine formula",
+    "description": "A laravel package that helps you with geocoding addresses and reverse geocoding coordinates using the google maps api. It also helps in calculating the distance between two locations using the Hervasine formula and the coordinates of the locations",
     "license": "MIT",
     "authors": [
         {
@@ -17,7 +17,8 @@
     "minimum-stability": "dev",
     "require": {
         "illuminate/support": "~5",
-        "guzzlehttp/guzzle": "*"
+        "guzzlehttp/guzzle": "*",
+        "php": ">=5.5.9",
     },
     "require-dev": {
         "phpunit/phpunit": "~4.0"
