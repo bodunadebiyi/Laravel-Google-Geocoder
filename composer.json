@@ -14,7 +14,7 @@
             "Bodunde\\GoogleGeocoder\\Tests\\": "tests/"
         }
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "dev-master",
     "require": {
         "illuminate/support": "~5",
         "guzzlehttp/guzzle": "*",
