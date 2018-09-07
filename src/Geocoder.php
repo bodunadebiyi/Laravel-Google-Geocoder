@@ -46,6 +46,9 @@ class Geocoder {
     if (isset($results['error_message'])) {
       return null;
     }
+    if(isset($results['status']) && $results['status'] == 'ZERO_RESULTS'){
+      return null;
+    }
 
     return $results['results'][0]['geometry']['location'];
   }

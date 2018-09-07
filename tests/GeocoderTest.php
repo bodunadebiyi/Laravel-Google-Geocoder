@@ -52,4 +52,11 @@ class GeocoderTest extends \PHPUnit_Framework_TestCase
     $this->assertInternalType("float", $result);
     $this->assertTrue(!empty($result));
   }
+
+  public function testZeroResults()
+  {
+    $results = $this->geocoder->getCoordinates("N/A, N/A, VA N/A");
+
+    $this->assertNull($results);
+  }
 }
