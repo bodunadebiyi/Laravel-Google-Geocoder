@@ -27,7 +27,7 @@ class Geocoder {
   public function __construct()
   {
     if (function_exists('config')) {
-      $this->googleApiKey = config('pusher.google_api_key');
+      $this->googleApiKey = config('geocoder.google_api_key');
     }
     $this->client = new Client($this->guzzleClientOptions());
   }
